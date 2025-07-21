@@ -1,4 +1,60 @@
-[eslint]
+ const apacReverseKey = Object.fromEntries(
+   Object.entries(apacForwardKey).map(([fe, be]) => [be, fe])
+ );
+
++// Format a backend partition key into "Country • City"
++const formatPartition = key => {
++  const feCode = apacReverseKey[key];
++  const display = feCode && apacPartitionDisplay[feCode];
++  return display
++    ? `${display.country} • ${display.city}`
++    : key;  // fallback to raw if missing
++};
+
+
+
+
+
+   const ws = XLSX.utils.json_to_sheet(
+     detailRows.map((r, i) => ({
+       Sr: i + 1,
+       Date: format(new Date(r.LocaleMessageTime), 'yyyy-MM-dd'),
+       Time: format(new Date(r.LocaleMessageTime), 'HH:mm:ss'),
+       EmployeeID: r.EmployeeID,
+       Name: r.ObjectName1,
+       PersonnelType: r.PersonnelType,
+       Door: r.Door,
+-      Partition: r.PartitionName2
++      Partition: formatPartition(r.PartitionName2)
+     }))
+   );
+
+
+
+
+
+
+                     <TableBody>
+                       {detailRows.map((r, i) => (
+                         <TableRow key={`${r.PersonGUID}-${i}`}>
+                           {/* …other cells… */}
+                           <TableCell sx={{ border: '2px solid #000' }}>{r.Door}</TableCell>
+-                          <TableCell sx={{ border: '2px solid #000' }}>{r.PartitionName2}</TableCell>
++                          <TableCell sx={{ border: '2px solid #000' }}>
++                            {formatPartition(r.PartitionName2)}
++                          </TableCell>
+                         </TableRow>
+                       ))}
+                     </TableBody>
+
+
+
+
+
+
+
+
+eslint]
 src\pages\History.jsx
   Line 141:21:  'formatPartition' is not defined  no-undef
   Line 372:7:   'formatPartition' is not defined  no-undef
