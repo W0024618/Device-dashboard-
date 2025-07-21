@@ -1,3 +1,58 @@
+D:\DASHBOARD\namer-occupancy-backend\ml-service\start-ml-service.bat
+
+
+
+@echo off
+cd /d D:\DASHBOARD\namer-occupancy-backend\ml-service
+call venv\Scripts\activate.bat
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+
+# --- ml-service: use the batch wrapper now -----------------------------
+
+- Start-Backend `
+-   -Name     'ml-service' `
+-   -WorkDir  'D:\DASHBOARD\namer-occupancy-backend\ml-service' `
+-   -ExecPath 'D:\DASHBOARD\namer-occupancy-backend\ml-service\venv\Scripts\python.exe' `
+-   -ExecArgs @( 
+-       '-m',
+-       'uvicorn',
+-       'app:app',
+-       '--host',
+-       '0.0.0.0',
+-       '--port',
+-       '8000'
+-   )
++ Start-Backend `
++   -Name     'ml-service' `
++   -WorkDir  'D:\DASHBOARD\namer-occupancy-backend\ml-service' `
++   -ExecPath 'start-ml-service.bat' `
++   -ExecArgs @()  # no args, batch file wraps everything
+
+
+
+
+
+
+pm2 save
+pm2 startup
+
+
+
+pm2-startup install
+
+
+
+
+
+
+
+
+
+
+
+
 .\venv\Scripts\activate
 python -m uvicorn app:app --host 0.0.0.0 --port 8000
 then Namer ml-services works 
