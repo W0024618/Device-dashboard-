@@ -1,3 +1,37 @@
+  const ws = XLSX.utils.json_to_sheet(
+    detailRows.map((r, i) => ({
+      Sr: i + 1,
+      Date: format(new Date(r.LocaleMessageTime), 'yyyy-MM-dd'),
+      Time: format(new Date(r.LocaleMessageTime), 'HH:mm:ss'),
+      EmployeeID: r.EmployeeID,
+      Name: r.ObjectName1,
+      PersonnelType: r.PersonnelType,
+      Door: r.Door,
+-     Partition: r.PartitionName2
++     Partition: formatPartition(r.PartitionName2)
+    }))
+  );
+
+
+{detailRows.map((r, i) => (
+  <TableRow key={`${r.PersonGUID}-${i}`}>
+    {/* ... other cells ... */}
+    <TableCell sx={{ border: '2px solid #000' }}>{r.Door}</TableCell>
+-   <TableCell sx={{ border: '2px solid #000' }}>{r.PartitionName2}</TableCell>
++   <TableCell sx={{ border: '2px solid #000' }}>
++     {formatPartition(r.PartitionName2)}
++   </TableCell>
+  </TableRow>
+))}
+
+
+
+
+
+
+
+
+
 Now Read below History page and update Partation Column name carefully.
 
 Sr	Date	Time	Employee ID	Name	Personnel Type	Door	Partition
