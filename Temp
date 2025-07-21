@@ -1,3 +1,16 @@
+    const byDate = raw.reduce((acc, r) => {
+-     const date = r.LocaleMessageTime.slice(0, 10); // "YYYY-MM-DD"
++     // force into a "YYYY-MM-DD" string
++     const date = new Date(r.LocaleMessageTime).toISOString().slice(0, 10);
+      acc[date] = acc[date] || {};
+      // ...
+    }, {});
+
+
+
+
+
+
 Now we got below error message solve this issue carefully
 
 C:\Users\W0024618\Desktop\apac-occupancy-backend> node server.js
