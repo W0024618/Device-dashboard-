@@ -1,74 +1,22 @@
- const apacReverseKey = Object.fromEntries(
-   Object.entries(apacForwardKey).map(([fe, be]) => [be, fe])
- );
+Understand issue is 
 
-+// Format a backend partition key into "Country • City"
-+const formatPartition = key => {
-+  const feCode = apacReverseKey[key];
-+  const display = feCode && apacPartitionDisplay[feCode];
-+  return display
-+    ? `${display.country} • ${display.city}`
-+    : key;  // fallback to raw if missing
-+};
+Sunday, 20 July, 2025
+Country	City	Employees	Contractors	Total
+India	Pune	0	51	51
+Philippines	Quezon City	54	27	81
+Japan	Tokyo	1	0	1
+Total	55	78	133
 
 
+There is no issue in Summary card
 
 
+in details srction
 
-   const ws = XLSX.utils.json_to_sheet(
-     detailRows.map((r, i) => ({
-       Sr: i + 1,
-       Date: format(new Date(r.LocaleMessageTime), 'yyyy-MM-dd'),
-       Time: format(new Date(r.LocaleMessageTime), 'HH:mm:ss'),
-       EmployeeID: r.EmployeeID,
-       Name: r.ObjectName1,
-       PersonnelType: r.PersonnelType,
-       Door: r.Door,
--      Partition: r.PartitionName2
-+      Partition: formatPartition(r.PartitionName2)
-     }))
-   );
+Sr	Date	Time	Employee ID	Name	Personnel Type	Door	Partition
 
-
-
-
-
-
-                     <TableBody>
-                       {detailRows.map((r, i) => (
-                         <TableRow key={`${r.PersonGUID}-${i}`}>
-                           {/* …other cells… */}
-                           <TableCell sx={{ border: '2px solid #000' }}>{r.Door}</TableCell>
--                          <TableCell sx={{ border: '2px solid #000' }}>{r.PartitionName2}</TableCell>
-+                          <TableCell sx={{ border: '2px solid #000' }}>
-+                            {formatPartition(r.PartitionName2)}
-+                          </TableCell>
-                         </TableRow>
-                       ))}
-                     </TableBody>
-
-
-
-
-
-
-
-
-eslint]
-src\pages\History.jsx
-  Line 141:21:  'formatPartition' is not defined  no-undef
-  Line 372:7:   'formatPartition' is not defined  no-undef
-
-Search for the keywords to learn more about each error.
-ERROR in [eslint]
-src\pages\History.jsx
-  Line 141:21:  'formatPartition' is not defined  no-undef
-  Line 372:7:   'formatPartition' is not defined  no-undef
-
-Search for the keywords to learn more about each error.
-
-webpack compiled with 1 error
-
+1	2025-07-20	00:03:24	316791	Garcia, Marieta	Employee	APAC_PH_Manila_6th Floor_Entry Door 2	  ----here partation Nme is not render 
+2	2025-07-20	00:45:44		Ampon, Liezel	Property Management	APAC_PH_Manila_6th Floor_Entry Door 2 ---------Here partation name is not render 
 
 
 
@@ -124,6 +72,19 @@ const apacForwardKey = {
 const apacReverseKey = Object.fromEntries(
   Object.entries(apacForwardKey).map(([fe, be]) => [be, fe])
 );
+
+
+// Format a backend partition key into "Country • City"
+const formatPartition = key => {
+  const feCode = apacReverseKey[key];
+  const display = feCode && apacPartitionDisplay[feCode];
+  return display
+    ? `${display.country} • ${display.city}`
+    : key;  // fallback to raw if missing
+};
+
+
+
 
 export default function History() {
   const { partition } = useParams();
@@ -443,10 +404,10 @@ export default function History() {
                         <TableCell sx={{ border: '2px solid #000' }}>{r.ObjectName1}</TableCell>
                         <TableCell sx={{ border: '2px solid #000' }}>{r.PersonnelType}</TableCell>
                         <TableCell sx={{ border: '2px solid #000' }}>{r.Door}</TableCell>
-
-     <TableCell sx={{ border: '2px solid #000' }}>
-     {formatPartition(r.PartitionName2)}
-   </TableCell>
+                          <TableCell sx={{ border: '2px solid #000' }}>
+                            {formatPartition(r.PartitionName2)}
+                          </TableCell>
+                      
                       </TableRow>
                     ))}
                   </TableBody>
