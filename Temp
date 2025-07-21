@@ -1,3 +1,40 @@
+     detailRows.map((r, i) => ({
+       Sr: i + 1,
+       Date: format(new Date(r.LocaleMessageTime), 'yyyy-MM-dd'),
+       Time: format(new Date(r.LocaleMessageTime), 'HH:mm:ss'),
+       EmployeeID: r.EmployeeID,
+       Name: r.ObjectName1,
+       PersonnelType: r.PersonnelType,
+       Door: r.Door,
+-      Partition: formatPartition(r.PartitionName2)
++      Partition: formatPartition(r.PartitionNameFriendly)
+     }))
+
+
+
+
+
+
+ {detailRows.map((r, i) => (
+   <TableRow key={`${r.PersonGUID}-${i}`}>
+     {/* ... other cells ... */}
+     <TableCell sx={{ border: '2px solid #000' }}>{r.Door}</TableCell>
+-    <TableCell sx={{ border: '2px solid #000' }}>
+-      {formatPartition(r.PartitionName2)}
+-    </TableCell>
++    <TableCell sx={{ border: '2px solid #000' }}>
++      {formatPartition(r.PartitionNameFriendly)}
++    </TableCell>
+   </TableRow>
+ ))}
+
+
+
+
+
+
+
+
 Understand issue is 
 
 Sunday, 20 July, 2025
