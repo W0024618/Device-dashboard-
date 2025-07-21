@@ -1,3 +1,51 @@
+@echo off
+cd /d D:\DASHBOARD\namer-occupancy-backend\ml-service
+call venv\Scripts\activate.bat
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+
+
+
+# --- BACKENDS via PM2 -- snip above ---
+
+# ml-service: use cmd.exe to run your batch script (which handles venv activation)
+Start-Backend `
+  -Name     'ml-service' `
+  -WorkDir  'D:\DASHBOARD\namer-occupancy-backend\ml-service' `
+  -ExecPath 'cmd.exe' `
+  -ExecArgs @('/c','start-ml-service.bat')
+
+# --- Next backends / frontends follow below… 
+
+
+
+
+
+# 1) Save the current process list (snapshot your apps)
+pm2 save
+
+# 2) Generate & install the Windows startup service
+pm2 startup windows
+
+# The last command will print something like:
+# “To configure the Startup Script, run: pm2-startup install”
+# If you see that, copy & paste it. For example:
+#    pm2-startup install
+
+# 3) (If prompted) install the PM2 Windows service
+pm2-startup install
+
+
+
+
+
+
+
+
+
+
+
 D:\DASHBOARD\namer-occupancy-backend\ml-service\start-ml-service.bat
 
 
