@@ -1,4 +1,48 @@
-     detailRows.map((r, i) => ({
+-// Format a backend partition key into "Country • City"
+-const formatPartition = key => {
+-  const feCode = apacReverseKey[key];
+-  const display = feCode && apacPartitionDisplay[feCode];
+-  return display
+-    ? `${display.country} • ${display.city}`
+-    : key;  // fallback to raw if missing
+-};
++// Format a backend partition key into just the city name
++const formatPartitionCity = key => {
++  const feCode = apacReverseKey[key];
++  const display = feCode && apacPartitionDisplay[feCode];
++  return display
++    ? display.city       // e.g. "Quezon City"
++    : key;               // fallback, e.g. "Pune"
++};
+
+
+
+
+   // in handleExport…
+-      Partition: formatPartition(r.PartitionNameFriendly)
++      Partition: formatPartitionCity(r.PartitionNameFriendly)
+
+
+
+
+   // in the Details table…
+-    <TableCell sx={{ border: '2px solid #000' }}>
+-      {formatPartition(r.PartitionNameFriendly)}
+-    </TableCell>
++    <TableCell sx={{ border: '2px solid #000' }}>
++      {formatPartitionCity(r.PartitionNameFriendly)}
++    </TableCell>
+
+
+
+
+
+
+
+
+
+
+detailRows.map((r, i) => ({
        Sr: i + 1,
        Date: format(new Date(r.LocaleMessageTime), 'yyyy-MM-dd'),
        Time: format(new Date(r.LocaleMessageTime), 'HH:mm:ss'),
