@@ -1,3 +1,18 @@
+.\venv\Scripts\activate
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+then Namer ml-services works 
+
+alos add when server restart we need to run cmd again manually it neeed to when server restart after 5 min need to run autostart .
+
+PS C:\Windows\system32> Set-ExecutionPolicy Bypass -Scope Process -Force
+PS C:\Windows\system32> cd D:\DASHBOARD
+PS D:\DASHBOARD> pm2 stop all
+[PM2] Spawning PM2 daemon with pm2_home=C:\Users\S326131HQ\.pm2
+[PM2] PM2 Successfully daemonized
+[PM2][WARN] No process found
+PS D:\DASHBOARD> .\Start-All-Dashboards.ps1
+
+
 # -------------------------------------------------------------------------------
 # Start-All-Dashboards.ps1
 # Launch all backends under PM2 and frontends each on its own port.
