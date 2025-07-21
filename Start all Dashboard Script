@@ -1,3 +1,42 @@
+D:\DASHBOARD\namer-occupancy-backend\ml-service\start-ml-service.bat
+
+
+
+
+@echo off
+cd /d D:\DASHBOARD\namer-occupancy-backend\ml-service
+call venv\Scripts\activate.bat
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+
+# ml-service: launch via cmd.exe so it picks up your .bat wrapper
+Start-Backend `
+  -Name     'ml-service' `
+  -WorkDir  'D:\DASHBOARD\namer-occupancy-backend\ml-service' `
+  -ExecPath 'cmd.exe' `
+  -ExecArgs @('/c','start-ml-service.bat')
+
+
+
+
+# 1) Save your current PM2 process list
+pm2 save
+
+# 2) Generate the Windows startup script
+pm2 startup windows
+
+# 3) Install the service that pm2 startup printed out
+#    It will look like: "To configure the Startup Script, run: pm2-startup install"
+#    So copy+paste that exact 'pm2-startup install' line:
+pm2-startup install
+
+
+
+
+
+
+
 .\venv\Scripts\activate
 python -m uvicorn app:app --host 0.0.0.0 --port 8000
 then Namer ml-services works 
