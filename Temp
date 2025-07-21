@@ -1,3 +1,118 @@
+--- exports.fetchHistoricalData = async ({ days = 7, location = null }) => {
++   const query = `
+     WITH Hist AS (
+       SELECT
+         -- … other columns …
+ 
+-        -- 1) Remap raw PartitionName2 into the friendly PartitionNameFriendly
+-        CASE
+-          WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
+-          WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
+-          WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
+-          WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
+-          WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
+-          ELSE t1.PartitionName2
+-        END                           
+-        AS PartitionNameFriendly,
++        -- 1) Remap raw PartitionName2 → friendly name, or default if null
++        COALESCE(
++          CASE
++            WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
++            WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
++            WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
++            WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
++            WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
++            ELSE t1.PartitionName2
++          END,
++          'APAC.Default'            -- fallback default partition
++        ) AS PartitionNameFriendly,
+ 
+         -- extract CardNumber
+         COALESCE(
+
+
+
+
+exports.getHistoricalOccupancy = async (req, res) => {
+  const location = req.params.location || null;
+  try {
+    // 1) Pull in rows — each now has non-null PartitionNameFriendly
+    const raw = await service.fetchHistoricalOccupancy(location);
+
+    // 2) Dedupe to first swipe per person per day
+    const byDate = raw.reduce((acc, r) => {
+      const date = r.LocaleMessageTime.slice(0, 10); // "YYYY-MM-DD"
+      acc[date] = acc[date] || {};
+      if (
+        !acc[date][r.PersonGUID] ||
+        new Date(r.LocaleMessageTime) < new Date(acc[date][r.PersonGUID].LocaleMessageTime)
+      ) {
+        acc[date][r.PersonGUID] = r;
+      }
+      return acc;
+    }, {});
+
+    const summaryByDate = [];
+    const details = [];
+
+    // 3) Build summaries
+    Object.keys(byDate).sort().forEach(date => {
+      const recs = Object.values(byDate[date]);
+      details.push(...recs);
+
+      // region totals
+      const region = { total: 0, Employee: 0, Contractor: 0 };
+      // per-partition buckets
+      const partitions = {};
+
+      recs.forEach(r => {
+        // increment region
+        region.total++;
+        if (isEmployeeType(r.PersonnelType)) region.Employee++;
+        else region.Contractor++;
+
+        // only build partitions if we're not filtering to a single location
+        if (!location) {
+          // use the friendly name (guaranteed non-null!), with fallback
+          const key = r.PartitionNameFriendly || 'APAC.Default';
+          if (!partitions[key]) {
+            partitions[key] = { total: 0, Employee: 0, Contractor: 0 };
+          }
+          partitions[key].total++;
+          if (isEmployeeType(r.PersonnelType)) partitions[key].Employee++;
+          else partitions[key].Contractor++;
+        }
+      });
+
+      summaryByDate.push({
+        date,
+        day: new Date(date).toLocaleDateString('en-US', { weekday: 'long' }),
+        region: location
+          ? { name: location, ...region }
+          : { name: 'APAC', ...region },
+        // if location is provided, you can still emit an empty object (`{}`) or skip:
+        partitions: location ? {} : partitions
+      });
+    });
+
+    // 4) Return
+    res.json({ success: true, summaryByDate, details });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Historical failed' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 Once check both file and solve issue from Hisrorical undefined 
 
 
