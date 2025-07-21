@@ -1,3 +1,268 @@
+
+# -------------------------------------------------------------------------------
+# Start-All-Dashboards.ps1
+# Launch all backends under PM2 and frontends (React) each on its own port.
+# Run as Administrator.
+# -------------------------------------------------------------------------------
+
+# 1) Install pm2 if missing
+if (-not (Get-Command pm2 -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing pm2 globally..." -ForegroundColor Yellow
+    npm install -g pm2
+}
+
+# 2) Helper to start a backend under PM2
+function Start-Backend {
+    param(
+        [string]$Name,
+        [string]$WorkDir,
+        [string]$ExecPath,   # node.exe, python.exe or simply 'npm'
+        [string[]]$ExecArgs  # arguments for ExecPath
+    )
+    Write-Host ""
+    Write-Host "Starting backend: $Name" -ForegroundColor Cyan
+    pm2 delete $Name -s | Out-Null
+    pm2 start $ExecPath `
+        --name $Name `
+        --cwd $WorkDir `
+        -- $ExecArgs
+}
+
+# 3) Helper to start a frontend on custom PORT
+function Start-Frontend {
+    param(
+        [string]$Name,
+        [string]$WorkDir,
+        [string]$Port,
+        [string]$NpmCmd    # "npm start" or "npm run dev:frontend"
+    )
+    Write-Host ""
+    Write-Host "Launching frontend: $Name on port $Port" -ForegroundColor Green
+    Start-Process powershell.exe -ArgumentList @(
+        "-NoExit",
+        "-ExecutionPolicy","Bypass",
+        "-Command",
+        "cd `"$WorkDir`"; `$Env:PORT=`"$Port`"; $NpmCmd"
+    )
+}
+
+
+# --- BACKENDS via PM2 ----------------------------------------------------------
+
+Start-Backend -Name      "apac-backend"      `
+              -WorkDir   "D:\DASHBOARD\apac-occupancy-backend" `
+              -ExecPath "C:\Program Files\nodejs\node.exe"           `
+              -ExecArgs @("server.js")
+
+Start-Backend -Name      "emea-backend"      `
+              -WorkDir   "D:\DASHBOARD\emea-occupancy-backend" `
+              -ExecPath "C:\Program Files\nodejs\node.exe"           `
+              -ExecArgs @("server.js")
+
+# LACA: use plain 'npm' to avoid Windows‐batch wrapper errors
+Start-Backend -Name      "laca-backend"      `
+              -WorkDir   "D:\DASHBOARD\laca-occupancy-backend" `
+              -ExecPath "npm"                                          `
+              -ExecArgs @("run","dev")
+
+Start-Backend -Name      "namer-backend"     `
+              -WorkDir   "D:\DASHBOARD\namer-occupancy-backend" `
+              -ExecPath "C:\Program Files\nodejs\node.exe"           `
+              -ExecArgs @("server.js")
+
+# ml-service: ensure uvicorn & FastAPI are installed in venv
+Start-Backend -Name      "ml-service"        `
+              -WorkDir   "D:\DASHBOARD\namer-occupancy-backend\ml-service" `
+              -ExecPath "D:\DASHBOARD\namer-occupancy-backend\ml-service\venv\Scripts\python.exe" `
+              -ExecArgs @("-m","uvicorn","app:app","--host","0.0.0.0","--port","8000")
+
+# GLOBAL: again use 'npm'
+Start-Backend -Name      "global-backend"    `
+              -WorkDir   "D:\DASHBOARD\global-page"          `
+              -ExecPath "npm"                                          `
+              -ExecArgs @("run","start:backend")
+
+Start-Backend -Name      "employee-backend"  `
+              -WorkDir   "D:\DASHBOARD\employee-verification" `
+              -ExecPath "C:\Program Files\nodejs\node.exe"           `
+              -ExecArgs @("server.js")
+
+
+# --- FRONTENDS in new PS windows ----------------------------------------------
+
+Start-Frontend -Name    "apac-frontend"      `
+               -WorkDir "D:\DASHBOARD\apac-occupancy-frontend" `
+               -Port     "3000"                     `
+               -NpmCmd   "npm start"
+
+Start-Frontend -Name    "emea-frontend"      `
+               -WorkDir "D:\DASHBOARD\emea-occupancy-frontend" `
+               -Port     "3001"                     `
+               -NpmCmd   "npm start"
+
+Start-Frontend -Name    "namer-frontend"     `
+               -WorkDir "D:\DASHBOARD\namer-occupancy-frontend\namer-occupancy-frontend" `
+               -Port     "3002"                     `
+               -NpmCmd   "npm start"
+
+Start-Frontend -Name    "laca-frontend"      `
+               -WorkDir "D:\DASHBOARD\laca-occupancy-frontend" `
+               -Port     "3003"                     `
+               -NpmCmd   "npm start"
+
+Start-Frontend -Name    "employee-frontend"  `
+               -WorkDir "D:\DASHBOARD\employee-verification\frontend" `
+               -Port     "3004"                     `
+               -NpmCmd   "npm start"
+
+Start-Frontend -Name    "global-frontend"    `
+               -WorkDir "D:\DASHBOARD\global-page"           `
+               -Port     "3005"                     `
+               -NpmCmd   "npm run dev:frontend"
+
+
+# -------------------------------------------------------------------------------
+
+Write-Host ''
+Write-Host 'All services have been launched.' -ForegroundColor White
+Write-Host 'Backends under pm2 - run pm2 list or pm2 logs <name>' -ForegroundColor Gray
+Write-Host 'Frontends in PS windows on ports 3000-3005.' -ForegroundColor Gray
+
+
+
+
+
+
+
+cd D:\DASHBOARD\namer-occupancy-backend\ml-service
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt   # ensure uvicorn, fastapi, etc.
+
+
+
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+
+npm install cors
+
+
+const express = require('express');
+const cors    = require('cors');
+const app     = express();
+
+app.use(cors({
+  origin: ['http://localhost:3003','http://localhost:3000', /*etc*/],
+  methods: ['GET','POST','PUT','DELETE']
+}));
+
+
+
+
+
+pm2 restart laca-backend
+
+
+
+cd D:\DASHBOARD\global-page
+npm run start:backend
+
+
+
+
+
+pm2 delete global-backend
+pm2 start npm --name "global-backend" --cwd "D:\DASHBOARD\global-page" -- run start:backend --env production
+
+
+
+
+
+
+Set-ExecutionPolicy Bypass -Scope Process -Force
+cd D:\DASHBOARD
+.\Start-All-Dashboards.ps1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //C:\Users\W0024618\Desktop\apac-occupancy-backend\src\controllers\occupancy.controller.js
 
 // src/controllers/occupancy.controller.js
