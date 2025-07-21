@@ -1,0 +1,94 @@
+D:\DASHBOARD\namer-occupancy-backend\ml-service\.bat
+
+
+@echo off
+cd /d D:\DASHBOARD\namer-occupancy-backend\ml-service
+call venv\Scripts\activate.bat
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
+
+
+
+
+error message for ml-service 
+
+Starting backend: ml-service...
+[PM2] Starting C:\WINDOWS\SYSTEM32\CMD.EXE in fork_mode (1 instance)
+[PM2] Done.
+[PM2][ERROR] Script not found: D:\c start-ml-service.bat
+
+
+error for auto start
+solve one by one error
+PS D:\DASHBOARD> pm2-startup install
+pm2-startup : The term 'pm2-startup' is not recognized as the name of a cmdlet, function, script file, or operable
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ pm2-startup install
++ ~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (pm2-startup:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS D:\DASHBOARD> pm2 startup windows
+[PM2][ERROR] Init system not found
+C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226
+    if (process.getuid() != 0) {
+                ^
+
+TypeError: process.getuid is not a function
+    at CLI.startup (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226:17)
+    at Command.<anonymous> (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:716:9)
+    at Command.listener (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:315:8
+    at Command.emit (node:events:518:28)
+    at Command.parseArgs (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:651:
+)
+    at Command.parse (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:474:21)
+    at Timeout._onTimeout (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:213:15)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+
+Node.js v22.16.0
+PS D:\DASHBOARD> pm2 startup windows install
+[PM2][ERROR] Init system not found
+C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226
+    if (process.getuid() != 0) {
+                ^
+
+TypeError: process.getuid is not a function
+    at CLI.startup (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226:17)
+    at Command.<anonymous> (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:716:9)
+    at Command.listener (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:315:8
+    at Command.emit (node:events:518:28)
+    at Command.parseArgs (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:651:
+)
+    at Command.parse (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:474:21)
+    at Timeout._onTimeout (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:213:15)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
