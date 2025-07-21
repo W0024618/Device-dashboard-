@@ -1,3 +1,52 @@
+--- src/pages/History.jsx
+@@
+   const partitionRows = useMemo(() => {
+     if (!summaryEntry) return [];
+     return Object.entries(summaryEntry.partitions)
+       .filter(([key]) =>
+         !filterCode ? true : key.startsWith(filterCode + '.')
+       )
+-      .map(([key, vals]) => {
+-        const display = apacPartitionDisplay[key];
+-        return {
+-          country: display ? display.country : key.split('.')[0],
+-          city:    display ? display.city    : key,
+-          employee:   vals.Employee    ?? 0,
+-          contractor: vals.Contractor  ?? 0,
+-          total:      vals.total       ?? 0,
+-        };
+-      });
++      .map(([key, vals]) => {
++        // try direct mapping...
++        let display = apacPartitionDisplay[key];
++        // ...otherwise, try to match on the city name
++        if (!display) {
++          display = Object.values(apacPartitionDisplay)
++            .find(d => d.city === key);
++        }
++        return {
++          country: display
++            ? display.country
++            : // fallback to the first token if all else fails
++              (key.includes('.') ? key.split('.')[0] : key),
++          city:    display
++            ? display.city
++            : key,
++          employee:   vals.Employee    ?? 0,
++          contractor: vals.Contractor  ?? 0,
++          total:      vals.total       ?? 0,
++        };
++      });
+   }, [summaryEntry, filterCode]);
+
+
+
+
+
+
+
+
+
 in history page we got partation column undefined so fix this issue carefully.
 
 Country	City	Employees	Contractors	Total
