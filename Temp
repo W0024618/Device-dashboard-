@@ -1,3 +1,30 @@
+   CASE
+     WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
+     WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
+     WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
+     WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
+     WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
+     ELSE t1.PartitionName2
+   END
+-  AS PartitionNameFriendly,
++  AS RawFriendlyName,
++  COALESCE(
++    CASE
++      WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
++      WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
++      WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
++      WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
++      WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
++      ELSE t1.PartitionName2
++    END,
++    'APAC.Default'          -- or whatever default you prefer
++  ) AS PartitionNameFriendly,
+
+
+
+
+
+
 Now read below API Responce ans solve this issue carefullu
 
 http://localhost:3007/api/occupancy/history
