@@ -1,219 +1,4 @@
-   CASE
-     WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
-     WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
-     WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
-     WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
-     WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
-     ELSE t1.PartitionName2
-   END
--  AS PartitionNameFriendly,
-+  AS RawFriendlyName,
-+  COALESCE(
-+    CASE
-+      WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
-+      WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
-+      WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
-+      WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
-+      WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
-+      ELSE t1.PartitionName2
-+    END,
-+    'APAC.Default'          -- or whatever default you prefer
-+  ) AS PartitionNameFriendly,
-
-
-
-
-
-
-Now read below API Responce ans solve this issue carefullu
-
-http://localhost:3007/api/occupancy/history
-
-{
-  "success": true,
-  "summaryByDate": [
-    {
-      "date": "2025-07-14",
-      "day": "Monday",
-      "region": {
-        "name": "APAC",
-        "total": 1105,
-        "Employee": 938,
-        "Contractor": 167
-      },
-      "partitions": {
-        "undefined": {----------Partation are undefined solve this issue 
-          "total": 1105,
-          "Employee": 938,
-          "Contractor": 167
-        }
-      }
-    },
-    {
-      "date": "2025-07-15",
-      "day": "Tuesday",
-      "region": {
-        "name": "APAC",
-        "total": 1291,
-        "Employee": 1129,
-        "Contractor": 162
-      },
-      "partitions": {
-        "undefined": {
-          "total": 1291,
-          "Employee": 1129,
-          "Contractor": 162
-        }
-      }
-    },
-    {
-      "date": "2025-07-16",
-      "day": "Wednesday",
-      "region": {
-        "name": "APAC",
-        "total": 1427,
-        "Employee": 1257,
-        "Contractor": 170
-      },
-      "partitions": {
-        "undefined": {
-          "total": 1427,
-          "Employee": 1257,
-          "Contractor": 170
-        }
-      }
-    },
-    {
-      "date": "2025-07-17",
-      "day": "Thursday",
-      "region": {
-        "name": "APAC",
-        "total": 1041,
-        "Employee": 903,
-        "Contractor": 138
-      },
-      "partitions": {
-        "undefined": {
-          "total": 1041,
-          "Employee": 903,
-          "Contractor": 138
-        }
-      }
-    },
-    {
-      "date": "2025-07-18",
-      "day": "Friday",
-      "region": {
-        "name": "APAC",
-        "total": 669,
-        "Employee": 544,
-        "Contractor": 125
-      },
-      "partitions": {
-        "undefined": {
-          "total": 669,
-          "Employee": 544,
-          "Contractor": 125
-        }
-      }
-    },
-    {
-      "date": "2025-07-19",
-      "day": "Saturday",
-      "region": {
-        "name": "APAC",
-        "total": 180,
-        "Employee": 103,
-        "Contractor": 77
-      },
-      "partitions": {
-        "undefined": {
-          "total": 180,
-          "Employee": 103,
-          "Contractor": 77
-        }
-      }
-    },
-    {
-      "date": "2025-07-20",
-      "day": "Sunday",
-      "region": {
-        "name": "APAC",
-        "total": 133,
-        "Employee": 55,
-        "Contractor": 78
-      },
-      "partitions": {
-        "undefined": {
-          "total": 133,
-          "Employee": 55,
-          "Contractor": 78
-        }
-      }
-    },
-    {
-      "date": "2025-07-21",
-      "day": "Monday",
-      "region": {
-        "name": "APAC",
-        "total": 923,
-        "Employee": 807,
-        "Contractor": 116
-      },
-      "partitions": {
-        "undefined": {
-          "total": 923,
-          "Employee": 807,
-          "Contractor": 116
-        }
-      }
-    }
-  ],
-  "details": [
-    {
-      "LocaleMessageTime": "2025-07-14T00:00:10.000Z",
-      "ObjectName1": "Castillo, Mary Jane Jimenez",
-      "Door": "APAC_PH_Manila_7th Floor_Recption Door 2-701",
-      "EmployeeID": "303302",
-      "PersonnelType": "Employee",
-      "PersonGUID": "E0530ECA-F13E-4C83-8177-C42515CF1620",
-      "PartitionNameFriendly": "Quezon City",
-      "CardNumber": "609927",
-      "Direction": "InDirection"
-    },
-    {
-      "LocaleMessageTime": "2025-07-14T00:00:50.000Z",
-      "ObjectName1": "Jutar, Rizza Gentil",
-      "Door": "APAC_PH_Manila_7th Floor_Recption Door 1-701",
-      "EmployeeID": "314594",
-      "PersonnelType": "Employee",
-      "PersonGUID": "2D25EC7B-0AC3-4BB5-80BA-EE668914A278",
-      "PartitionNameFriendly": "Quezon City",
-      "CardNumber": "418760",
-      "Direction": "OutDirection"
-    },
-    {
-      "LocaleMessageTime": "2025-07-14T00:01:34.000Z",
-      "ObjectName1": "India, TEMP_PUN_001",
-      "Door": "APAC_IN_PUN_PODIUM_ST2 DOOR 1 (RED)",
-      "EmployeeID": "",
-      "PersonnelType": "Temp Badge",
-      "PersonGUID": "1E3639F4-4F63-459E-95CB-4F08CCB4742E",
-      "PartitionNameFriendly": "Pune",
-      "CardNumber": "411101",
-      "Direction": "InDirection"
-    },
-    {
-
-
-
-
-
-
-
-
-
-
+Once check both file and solve issue from Hisrorical undefined 
 
 
 //C:\Users\W0024618\Desktop\apac-occupancy-backend\src\services\occupancy.service.js
@@ -342,7 +127,21 @@ exports.fetchHistoricalData = async ({ days = 7, location = null }) => {
           WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
           WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
           ELSE t1.PartitionName2
-        END                           AS PartitionNameFriendly,
+        END                           
+        --AS PartitionNameFriendly,
+
+  AS RawFriendlyName,
+  COALESCE(
+    CASE
+      WHEN t1.ObjectName2 LIKE 'APAC_PI%'   THEN 'Taguig City'
+      WHEN t1.ObjectName2 LIKE 'APAC_PH%'   THEN 'Quezon City'
+      WHEN t1.ObjectName2 LIKE '%PUN%'      THEN 'Pune'
+      WHEN t1.ObjectName2 LIKE 'APAC_JPN%'  THEN 'JP.Tokyo'
+      WHEN t1.ObjectName2 LIKE 'APAC_MY%'   THEN 'MY.Kuala Lumpur'
+      ELSE t1.PartitionName2
+    END,
+    'APAC.Default'          -- or whatever default you prefer
+  ) AS PartitionNameFriendly,
 
         -- extract CardNumber
         COALESCE(
@@ -389,4 +188,287 @@ exports.fetchHistoricalData = async ({ days = 7, location = null }) => {
 
 exports.fetchHistoricalOccupancy = async (location) =>
   exports.fetchHistoricalData({ days: 7, location: location || null });
+
+
+
+
+
+
+
+
+
+
+//C:\Users\W0024618\Desktop\apac-occupancy-backend\src\controllers\occupancy.controller.js
+
+// src/controllers/occupancy.controller.js
+const service = require('../services/occupancy.service');
+
+const {
+  doorMap,
+  normalizedDoorZoneMap,
+  doorZoneMap,
+  zoneFloorMap,
+  normalizeDoorName
+} = require('../utils/doorMap');
+
+
+
+
+function isEmployeeType(pt) {
+  return ['Employee','Terminated Employee','Terminated Personnel'].includes(pt);
+}
+
+function lookupFloor(partition, rawDoor, direction, unmapped) {
+  const norm = normalizeDoorName(rawDoor);
+  const key  = `${norm}___${direction}`;
+
+  // 1) Try normalized lookup
+  const zone = normalizedDoorZoneMap[key];
+  if (zone) {
+    const f = zoneFloorMap[zone];
+    if (f) return f;
+  }
+
+  // 2) Fallback to per-partition doorMap
+  const entry = doorMap.find(d =>
+    d.normalizedDoor === norm && d.partition === partition
+  );
+  if (entry) {
+    const fl = direction === 'InDirection'
+      ? entry.inDirectionFloor
+      : entry.outDirectionFloor;
+    if (fl) return fl;
+  }
+
+  // 3) Nothing matched → record & return Unknown
+  unmapped.add(`${partition}|${rawDoor}`);
+  return 'Unknown';
+}
+
+
+
+function mapDoorToZone(rawDoor, rawDir) {
+  const key = normalizeDoorName(rawDoor) + '___' + (rawDir === 'InDirection' ? 'InDirection' : 'OutDirection');
+  const zone = normalizedDoorZoneMap[key];
+  if (!zone) return 'Unknown Zone';
+  // for OutDirection that aren’t true “Out of office”, strip trailing “ Zone”
+  if (rawDir === 'OutDirection' && zone !== 'Out of office') {
+    return zone.replace(/\s+Zone$/i, '');
+  }
+  return zone;
+}
+
+
+
+
+
+
+exports.getLiveOccupancy = async (req,res) => {
+  try {
+    const data = await service.fetchLiveOccupancy();
+    res.json({ success:true, count:data.length, data });
+  } catch(e) {
+    console.error(e);
+    res.status(500).json({ success:false, message:'Live fetch failed' });
+  }
+};
+
+exports.getLiveSummary = async (req,res) => {
+  try {
+    const swipes = await service.fetchLiveOccupancy();
+
+    // first swipe per person = TODAY
+    const first = {};
+    swipes.forEach(r => {
+      const t = new Date(r.LocaleMessageTime).getTime();
+      if (!first[r.PersonGUID] || t < new Date(first[r.PersonGUID].LocaleMessageTime).getTime()) {
+        first[r.PersonGUID] = r;
+      }
+    });
+    const today = { total:0, Employee:0, Contractor:0 };
+    Object.values(first).forEach(r => {
+      today.total++;
+      if (isEmployeeType(r.PersonnelType)) today.Employee++;
+      else today.Contractor++;
+    });
+
+    // last swipe per person for realtime
+    const last = {};
+    swipes.forEach(r => {
+      const t = new Date(r.LocaleMessageTime).getTime();
+      if (!last[r.PersonGUID] || t > new Date(last[r.PersonGUID].LocaleMessageTime).getTime()) {
+        last[r.PersonGUID] = r;
+      }
+    });
+
+    const realtime = {};
+    const unmapped = new Set();
+
+
+
+
+    Object.values(last).forEach(r => {
+      const p = r.PartitionName2;
+
+      // ── Pune gets the more advanced In/Out eviction logic ──
+      if (p === 'Pune') {
+        const zoneRaw = mapDoorToZone(r.Door, r.Direction);
+
+        // 1) Unknown keys → drop
+        if (zoneRaw === 'Unknown Zone') return;
+
+        // 2) True “Out of office” → full drop
+        if (r.Direction === 'OutDirection' && zoneRaw === 'Out of office') {
+          return;
+        }
+
+        // 3) Any other OutDirection → only keep if it’s “…Outer Area”
+        if (r.Direction === 'OutDirection' && !zoneRaw.endsWith('Outer Area')) {
+          return;
+        }
+
+        // 4) now safe to count
+        if (!realtime[p]) realtime[p] = { total:0, Employee:0, Contractor:0, floors:{} };
+        realtime[p].total++;
+        if (isEmployeeType(r.PersonnelType)) realtime[p].Employee++;
+        else                                  realtime[p].Contractor++;
+
+        // 5) floor‐bucket as usual
+        const fl = lookupFloor(p, r.Door, r.Direction, unmapped);
+       if (fl !== 'Unknown') {
+          realtime[p].floors[fl] = (realtime[p].floors[fl] || 0) + 1;
+        }
+        return;
+      }
+
+      // ── All other partitions keep your existing logic ──
+      // (the original “drop only Out of office” snippet)
+      const normKey = normalizeDoorName(r.Door) + '___' + r.Direction;
+      let zone = normalizedDoorZoneMap[normKey];
+      if (!zone) {
+        const entry = doorMap.find(d =>
+          d.normalizedDoor === normalizeDoorName(r.Door) &&
+          d.partition === p
+        );
+        zone = entry
+          ? (r.Direction === 'InDirection'
+              ? normalizedDoorZoneMap[`${entry.normalizedDoor}___InDirection`]
+              : normalizedDoorZoneMap[`${entry.normalizedDoor}___OutDirection`])
+          : null;
+      }
+     if (zone === 'Out of office') return;
+
+      if (!realtime[p]) realtime[p] = { total:0, Employee:0, Contractor:0, floors:{} };
+      realtime[p].total++;
+      if (isEmployeeType(r.PersonnelType)) realtime[p].Employee++;
+      else                                  realtime[p].Contractor++;
+
+      const fl = lookupFloor(p, r.Door, r.Direction, unmapped);
+      if (fl !== 'Unknown') {
+        realtime[p].floors[fl] = (realtime[p].floors[fl] || 0) + 1;
+      }
+    });
+
+
+
+
+
+    // Log to server console for quick dev feedback:
+    if (unmapped.size) console.warn('Unmapped doors:', Array.from(unmapped));
+
+    res.json({
+      success:    true,
+      today,
+      realtime,
+      // expose the raw list of partition|door keys that had no mapping:
+      unmapped:   Array.from(unmapped),
+      details:    Object.values(last)
+    });
+
+
+
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success:false, message:'Summary failed' });
+  }
+};
+
+exports.getHistoricalOccupancy = async (req,res) => {
+  const location = req.params.location || null;
+  try {
+    const raw = await service.fetchHistoricalOccupancy(location);
+    // dedupe first swipe per person per day
+    const byDate = raw.reduce((acc,r) => {
+      const date = new Date(r.LocaleMessageTime).toISOString().slice(0,10);
+      acc[date] = acc[date]||{};
+      if (!acc[date][r.PersonGUID] ||
+          new Date(r.LocaleMessageTime) < new Date(acc[date][r.PersonGUID].LocaleMessageTime)
+      ) {
+        acc[date][r.PersonGUID] = { ...r, LocaleMessageTime: r.LocaleMessageTime };
+      }
+      return acc;
+    }, {});
+
+    const summaryByDate = [], details = [];
+    Object.keys(byDate).sort().forEach(date => {
+      const recs = Object.values(byDate[date]);
+      details.push(...recs);
+      const region = { total:0, Employee:0, Contractor:0 };
+      const partitions = {};
+      recs.forEach(r => {
+        region.total++;
+        if (isEmployeeType(r.PersonnelType)) region.Employee++;
+        else region.Contractor++;
+        if (!location) {
+          partitions[r.PartitionName2] = partitions[r.PartitionName2]||{ total:0,Employee:0,Contractor:0 };
+          partitions[r.PartitionName2].total++;
+          if (isEmployeeType(r.PersonnelType)) partitions[r.PartitionName2].Employee++;
+          else partitions[r.PartitionName2].Contractor++;
+        }
+      });
+      summaryByDate.push({
+        date,
+        day: new Date(date).toLocaleDateString('en-US',{ weekday:'long' }),
+        region: location ? { name:location, ...region } : { name:'APAC', ...region },
+        partitions: location ? undefined : partitions
+      });
+    });
+
+    res.json({ success:true, summaryByDate, details });
+  } catch(e) {
+    console.error(e);
+    res.status(500).json({ success:false, message:'Historical failed' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
