@@ -1,5 +1,6 @@
-D:\DASHBOARD\namer-occupancy-backend\ml-service\.bat
+lets check each line by line  and solve the issue carefully
 
+D:\DASHBOARD\namer-occupancy-backend\ml-service\start-ml-service.bat
 
 @echo off
 cd /d D:\DASHBOARD\namer-occupancy-backend\ml-service
@@ -7,88 +8,150 @@ call venv\Scripts\activate.bat
 python -m uvicorn app:app --host 0.0.0.0 --port 8000
 
 
+# -------------------------------------------------------------------------------
+# Start-All-Dashboards.ps1
+# Launch all backends under PM2 and frontends each on its own port.
+# Run as Administrator.
+# -------------------------------------------------------------------------------
+
+# 1) Ensure pm2 is installed
+if (-not (Get-Command pm2 -ErrorAction SilentlyContinue)) {
+    Write-Host 'Installing pm2 globally...' -ForegroundColor Yellow
+    npm install -g pm2
+}
+
+# 2) Helper: start a backend under PM2
+function Start-Backend {
+    param(
+        [string]$Name,       # friendly name under pm2
+        [string]$WorkDir,    # cwd for execution
+        [string]$ExecPath,   # 'node' or full python.exe
+        [string[]]$ExecArgs  # array of arguments
+    )
+    Write-Host ''
+    Write-Host "Starting backend: $Name..." -ForegroundColor Cyan
+    pm2 delete $Name -s | Out-Null
+    pm2 start $ExecPath `
+        --name  $Name `
+        --cwd   $WorkDir `
+        --     $ExecArgs
+}
+
+# 3) Helper: start a frontend on a custom PORT
+function Start-Frontend {
+    param(
+        [string]$Name,     # friendly name
+        [string]$WorkDir,  # where package.json lives
+        [string]$Port,     # desired PORT env
+        [string]$NpmCmd    # e.g. 'npm start' or 'npm run dev:frontend'
+    )
+    Write-Host ''
+    Write-Host "Launching frontend: $Name on port $Port..." -ForegroundColor Green
+    Start-Process powershell.exe -ArgumentList @(
+        '-NoExit',
+        '-ExecutionPolicy','Bypass',
+        '-Command',
+        "cd `"$WorkDir`"; `$Env:PORT=`"$Port`"; $NpmCmd"
+    )
+}
 
 
-error message for ml-service 
+# --- BACKENDS via PM2 ----------------------------------------------------------
 
-Starting backend: ml-service...
-[PM2] Starting C:\WINDOWS\SYSTEM32\CMD.EXE in fork_mode (1 instance)
-[PM2] Done.
-[PM2][ERROR] Script not found: D:\c start-ml-service.bat
+# APAC
+Start-Backend `
+  -Name     'apac-backend' `
+  -WorkDir  'D:\DASHBOARD\apac-occupancy-backend' `
+  -ExecPath 'node' `
+  -ExecArgs @('server.js')
 
+# EMEA
+Start-Backend `
+  -Name     'emea-backend' `
+  -WorkDir  'D:\DASHBOARD\emea-occupancy-backend' `
+  -ExecPath 'node' `
+  -ExecArgs @('server.js')
 
-error for auto start
-solve one by one error
-PS D:\DASHBOARD> pm2-startup install
-pm2-startup : The term 'pm2-startup' is not recognized as the name of a cmdlet, function, script file, or operable
-program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
-At line:1 char:1
-+ pm2-startup install
-+ ~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (pm2-startup:String) [], CommandNotFoundException
-    + FullyQualifiedErrorId : CommandNotFoundException
+# LACA: call your Express entry directly
+Start-Backend `
+  -Name     'laca-backend' `
+  -WorkDir  'D:\DASHBOARD\laca-occupancy-backend' `
+  -ExecPath 'node' `
+  -ExecArgs @('src/server.js')
 
-PS D:\DASHBOARD> pm2 startup windows
-[PM2][ERROR] Init system not found
-C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226
-    if (process.getuid() != 0) {
-                ^
+# NAMER
+Start-Backend `
+  -Name     'namer-backend' `
+  -WorkDir  'D:\DASHBOARD\namer-occupancy-backend' `
+  -ExecPath 'node' `
+  -ExecArgs @('server.js')
 
-TypeError: process.getuid is not a function
-    at CLI.startup (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226:17)
-    at Command.<anonymous> (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:716:9)
-    at Command.listener (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:315:8
-    at Command.emit (node:events:518:28)
-    at Command.parseArgs (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:651:
-)
-    at Command.parse (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:474:21)
-    at Timeout._onTimeout (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:213:15)
-    at listOnTimeout (node:internal/timers:588:17)
-    at process.processTimers (node:internal/timers:523:7)
+# ml-service: launch via cmd.exe so it picks up your .bat wrapper
+Start-Backend `
+  -Name     'ml-service' `
+  -WorkDir  'D:\DASHBOARD\namer-occupancy-backend\ml-service' `
+  -ExecPath 'cmd.exe' `
+  -ExecArgs @('/c','start-ml-service.bat')
 
-Node.js v22.16.0
-PS D:\DASHBOARD> pm2 startup windows install
-[PM2][ERROR] Init system not found
-C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226
-    if (process.getuid() != 0) {
-                ^
+# Global: run your index.js directly
+Start-Backend `
+  -Name     'global-backend' `
+  -WorkDir  'D:\DASHBOARD\global-page' `
+  -ExecPath 'node' `
+  -ExecArgs @('src/index.js')
 
-TypeError: process.getuid is not a function
-    at CLI.startup (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\API\Startup.js:226:17)
-    at Command.<anonymous> (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:716:9)
-    at Command.listener (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:315:8
-    at Command.emit (node:events:518:28)
-    at Command.parseArgs (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:651:
-)
-    at Command.parse (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\node_modules\commander\index.js:474:21)
-    at Timeout._onTimeout (C:\Users\S326131HQ\AppData\Roaming\npm\node_modules\pm2\lib\binaries\CLI.js:213:15)
-    at listOnTimeout (node:internal/timers:588:17)
-    at process.processTimers (node:internal/timers:523:7)
+# Employee Verification
+Start-Backend `
+  -Name     'employee-backend' `
+  -WorkDir  'D:\DASHBOARD\employee-verification' `
+  -ExecPath 'node' `
+  -ExecArgs @('server.js')
 
 
+# --- FRONTENDS in new PS windows -----------------------------------------------
+
+Start-Frontend `
+  -Name    'apac-frontend' `
+  -WorkDir 'D:\DASHBOARD\apac-occupancy-frontend' `
+  -Port    '3000' `
+  -NpmCmd  'npm start'
+
+Start-Frontend `
+  -Name    'emea-frontend' `
+  -WorkDir 'D:\DASHBOARD\emea-occupancy-frontend' `
+  -Port    '3001' `
+  -NpmCmd  'npm start'
+
+Start-Frontend `
+  -Name    'namer-frontend' `
+  -WorkDir 'D:\DASHBOARD\namer-occupancy-frontend\namer-occupancy-frontend' `
+  -Port    '3002' `
+  -NpmCmd  'npm start'
+
+Start-Frontend `
+  -Name    'laca-frontend' `
+  -WorkDir 'D:\DASHBOARD\laca-occupancy-frontend' `
+  -Port    '3003' `
+  -NpmCmd  'npm start'
+
+Start-Frontend `
+  -Name    'employee-frontend' `
+  -WorkDir 'D:\DASHBOARD\employee-verification\frontend' `
+  -Port    '3004' `
+  -NpmCmd  'npm start'
+
+Start-Frontend `
+  -Name    'global-frontend' `
+  -WorkDir 'D:\DASHBOARD\global-page' `
+  -Port    '3005' `
+  -NpmCmd  'npm run dev:frontend'
 
 
+# -------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Write-Host ''
+Write-Host 'All services have been launched.' -ForegroundColor White
+Write-Host '• Check backend status with pm2 list or pm2 logs <name>' -ForegroundColor Gray
+Write-Host '• Frontends are running in their own PS windows on ports 3000-3005.' -ForegroundColor Gray
 
 
